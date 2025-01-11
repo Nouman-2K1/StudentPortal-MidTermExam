@@ -7,22 +7,16 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useUser } from '../../context/UserContext';
+import User from '../../Interface/User.interface';
 
 interface SignInValues {
   email: string;
   password: string;
 }
 
-interface StudentData {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
-
 interface SignInResponse {
   studentToken: string;
-  studentdata: StudentData;
+  studentdata: User;
 }
 
 const SignIn: React.FC = () => {
