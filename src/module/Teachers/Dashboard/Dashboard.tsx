@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Dashboard: React.FC = () => {
+const TeacherDashboard: React.FC = () => {
   return (
     <div>
       <h1>dashboard</h1>
@@ -8,4 +8,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default TeacherDashboard;

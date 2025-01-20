@@ -1,21 +1,27 @@
-// ProtectedRoute.js
-import React from "react";
-import { Navigate } from "react-router-dom";
-import { useUser } from "./context/UserContext";
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useUser } from './context/UserContext';
+import { UserRole } from './Interface/User.interface';
 
-const ProtectedRoute: React.FC<{
+interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles: string[];
-}> = ({ children, allowedRoles }) => {
+  allowedRoles: UserRole[];
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  allowedRoles,
+}) => {
   const { user } = useUser();
+  const location = useLocation();
 
   if (!user) {
-    return <Navigate to="/auth/signin" />;
+    // Save the attempted url for redirecting after login
+    return <Navigate to="/auth/signin" state={{ from: location }} replace />;
   }
 
-  // If user's role is not allowed, redirect to unauthorized page
-  if (!allowedRoles.includes(user.role)) {
-    return <Navigate to="/unauthorized" />;
+  if (!allowedRoles.includes(user.role as UserRole)) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return <>{children}</>;

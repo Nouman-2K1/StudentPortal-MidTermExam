@@ -1,12 +1,12 @@
 import React from 'react';
-import DefaultLayout from './DefaultLayout';
+import TeacherDefaultLayout from './TeacherDefaultLayout';
 import { Outlet } from 'react-router-dom';
 
 const UserLayout: React.FC = () => {
   return (
-    <DefaultLayout>
+    <TeacherDefaultLayout>
       <Outlet />
-    </DefaultLayout>
+    </TeacherDefaultLayout>
   );
 };
 

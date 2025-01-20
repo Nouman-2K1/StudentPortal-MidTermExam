@@ -1,7 +1,7 @@
 import DropdownNotification from './DropdownNotification';
 import DropdownUser from './DropdownUser';
 
-const Header = (props: {
+const TeacherHeader = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
@@ -73,4 +73,4 @@ const Header = (props: {
   );
 };
 
-export default Header;
+export default TeacherHeader;

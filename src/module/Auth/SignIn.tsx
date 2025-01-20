@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Logo from '../../images/logo/logo.png';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css'; // Make sure this is imported
 import { useUser } from '../../context/UserContext';
-import User from '../../Interface/User.interface';
+import { Student, Teacher, Admin } from '../../Interface/User.interface';
+import Logo from '../../images/logo/logo.png';
 
 interface SignInValues {
   email: string;
   password: string;
-}
-
-interface SignInResponse {
-  studentToken: string;
-  studentdata: User;
+  role: 'admin' | 'student' | 'teacher';
 }
 
 const SignIn: React.FC = () => {
@@ -27,6 +23,7 @@ const SignIn: React.FC = () => {
   const initialValues: SignInValues = {
     email: '',
     password: '',
+    role: 'student',
   };
 
   const validationSchema = Yup.object().shape({
@@ -36,35 +33,99 @@ const SignIn: React.FC = () => {
     password: Yup.string()
       .min(6, 'Password must be at least 6 characters')
       .required('Password is required'),
+    role: Yup.string()
+      .oneOf(['admin', 'student', 'teacher'] as const, 'Invalid role')
+      .required('Role is required'),
   });
-
   const handleSignIn = async (values: SignInValues) => {
     setLoading(true);
     try {
-      const requestData = {
-        ...values, // email and password
-        role: 'student', // Add the role
-      };
-      const response = await axios.post<SignInResponse>(
-        'http://localhost:3301/auth/student/login',
-        requestData,
+      const response = await axios.post(
+        `http://localhost:3301/auth/${values.role}/login`,
+        values,
         {
           withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
       );
+
+      // Adjust the response destructuring to match the server's response structure
       const { studentToken, studentdata } = response.data;
 
-      setUser({ token: studentToken, ...studentdata });
+      // Rename and include the token in the user data
+      const userData = {
+        ...studentdata,
+        token: studentToken,
+      };
 
-      toast.success('Sign-in successful!');
-      navigate('/user/dashboard');
+      // Validate the user data structure
+      const isValidUserData = (
+        data: any,
+      ): data is Student | Teacher | Admin => {
+        const baseFields = ['name', 'email', 'role', 'token'];
+        const hasRequiredFields = baseFields.every((field) => field in data);
+
+        if (!hasRequiredFields) {
+          console.error(
+            'Missing required fields:',
+            baseFields.filter((field) => !(field in data)),
+          );
+          return false;
+        }
+
+        switch (data.role) {
+          case 'student':
+            return 'student_id' in data && 'roll_number' in data;
+          case 'teacher':
+            return 'teacher_id' in data;
+          case 'admin':
+            return 'admin_id' in data;
+          default:
+            return false;
+        }
+      };
+
+      if (!isValidUserData(userData)) {
+        console.error('Invalid user data structure:', userData);
+        throw new Error('Invalid user data structure received from server');
+      }
+
+      setUser(userData);
+
+      toast.success('Sign-in successful!', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+
+      setTimeout(() => {
+        navigate(`/${values.role}/dashboard`);
+      }, 1000);
     } catch (error: any) {
-      console.error('Sign-in failed:', error);
+      console.error('Sign-in error:', error);
+      let errorMessage = 'Sign-in failed. Please try again.';
 
-      // Check if the error has a response and if it contains a message
-      const errorMessage =
-        error.response?.data?.error || 'Invalid credentials, please try again.';
-      toast.error(errorMessage);
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      toast.error(errorMessage, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } finally {
       setLoading(false);
     }
@@ -93,7 +154,6 @@ const SignIn: React.FC = () => {
           style={{ height: '100vh' }}
         >
           <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-            <span className="mb-1.5 block font-medium">Student Portal</span>
             <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
               Sign In to Exam Portal
             </h2>
@@ -105,6 +165,25 @@ const SignIn: React.FC = () => {
             >
               {() => (
                 <Form>
+                  <div className="mb-4">
+                    <label className="mb-2.5 block font-medium text-black dark:text-white">
+                      Role
+                    </label>
+                    <Field
+                      as="select"
+                      name="role"
+                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    >
+                      <option value="student">Student</option>
+                      <option value="teacher">Teacher</option>
+                      <option value="admin">Admin</option>
+                    </Field>
+                    <ErrorMessage
+                      name="role"
+                      component="div"
+                      className="text-red-500 text-sm"
+                    />
+                  </div>
                   <div className="mb-4">
                     <label className="mb-2.5 block font-medium text-black dark:text-white">
                       Email

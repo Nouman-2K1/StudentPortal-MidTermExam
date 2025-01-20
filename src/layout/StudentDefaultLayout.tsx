@@ -2,7 +2,9 @@ import React, { useState, ReactNode } from 'react';
 import Header from '../components/Header/index';
 import Sidebar from '../components/Sidebar/index';
 
-const DefaultLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
+const StudentDefaultLayout: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -34,4 +36,4 @@ const DefaultLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
   );
 };
 
-export default DefaultLayout;
+export default StudentDefaultLayout;
