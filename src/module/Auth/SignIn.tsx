@@ -4,9 +4,14 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Make sure this is imported
+import 'react-toastify/dist/ReactToastify.css';
 import { useUser } from '../../context/UserContext';
-import { Student, Teacher, Admin } from '../../Interface/User.interface';
+import {
+  Student,
+  Teacher,
+  Admin,
+  UserType,
+} from '../../Interface/User.interface';
 import Logo from '../../images/logo/logo.png';
 
 interface SignInValues {
@@ -14,6 +19,24 @@ interface SignInValues {
   password: string;
   role: 'admin' | 'student' | 'teacher';
 }
+
+// Define response interfaces for each role
+interface AdminResponse {
+  adminToken: string;
+  admindata: Admin;
+}
+
+interface TeacherResponse {
+  teacherToken: string;
+  teacherdata: Teacher;
+}
+
+interface StudentResponse {
+  studentToken: string;
+  studentdata: Student;
+}
+
+type AuthResponse = AdminResponse | TeacherResponse | StudentResponse;
 
 const SignIn: React.FC = () => {
   const { setUser } = useUser();
@@ -37,10 +60,72 @@ const SignIn: React.FC = () => {
       .oneOf(['admin', 'student', 'teacher'] as const, 'Invalid role')
       .required('Role is required'),
   });
+
+  const extractUserData = (response: any, role: string): UserType => {
+    let userData: UserType;
+
+    switch (role) {
+      case 'admin':
+        userData = {
+          ...response.admindata,
+          token: response.adminToken,
+        } as Admin;
+        break;
+      case 'teacher':
+        userData = {
+          ...response.teacherdata,
+          token: response.teacherToken,
+        } as Teacher;
+        break;
+      case 'student':
+        userData = {
+          ...response.studentdata,
+          token: response.studentToken,
+        } as Student;
+        break;
+      default:
+        throw new Error('Invalid role specified');
+    }
+
+    return userData;
+  };
+
+  const validateUserData = (data: any, role: string): boolean => {
+    const baseFields = ['name', 'email', 'role'];
+    const hasBaseFields = baseFields.every((field) => field in data);
+
+    if (!hasBaseFields) {
+      console.error(
+        'Missing base fields:',
+        baseFields.filter((field) => !(field in data)),
+      );
+      return false;
+    }
+
+    switch (role) {
+      case 'student':
+        return (
+          'student_id' in data &&
+          'roll_number' in data &&
+          'department_id' in data &&
+          'semester' in data &&
+          'admission_year' in data &&
+          'current_year' in data &&
+          'active_status' in data
+        );
+      case 'teacher':
+        return 'teacher_id' in data && 'department_id' in data;
+      case 'admin':
+        return 'admin_id' in data;
+      default:
+        return false;
+    }
+  };
+
   const handleSignIn = async (values: SignInValues) => {
     setLoading(true);
     try {
-      const response = await axios.post(
+      const response = await axios.post<AuthResponse>(
         `http://localhost:3301/auth/${values.role}/login`,
         values,
         {
@@ -51,45 +136,12 @@ const SignIn: React.FC = () => {
         },
       );
 
-      // Adjust the response destructuring to match the server's response structure
-      const { studentToken, studentdata } = response.data;
+      const userData = extractUserData(response.data, values.role);
 
-      // Rename and include the token in the user data
-      const userData = {
-        ...studentdata,
-        token: studentToken,
-      };
-
-      // Validate the user data structure
-      const isValidUserData = (
-        data: any,
-      ): data is Student | Teacher | Admin => {
-        const baseFields = ['name', 'email', 'role', 'token'];
-        const hasRequiredFields = baseFields.every((field) => field in data);
-
-        if (!hasRequiredFields) {
-          console.error(
-            'Missing required fields:',
-            baseFields.filter((field) => !(field in data)),
-          );
-          return false;
-        }
-
-        switch (data.role) {
-          case 'student':
-            return 'student_id' in data && 'roll_number' in data;
-          case 'teacher':
-            return 'teacher_id' in data;
-          case 'admin':
-            return 'admin_id' in data;
-          default:
-            return false;
-        }
-      };
-
-      if (!isValidUserData(userData)) {
-        console.error('Invalid user data structure:', userData);
-        throw new Error('Invalid user data structure received from server');
+      if (!validateUserData(userData, values.role)) {
+        throw new Error(
+          `Invalid ${values.role} data structure received from server`,
+        );
       }
 
       setUser(userData);
@@ -108,15 +160,11 @@ const SignIn: React.FC = () => {
       }, 1000);
     } catch (error: any) {
       console.error('Sign-in error:', error);
-      let errorMessage = 'Sign-in failed. Please try again.';
-
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        'Sign-in failed. Please try again.';
 
       toast.error(errorMessage, {
         position: 'top-right',
