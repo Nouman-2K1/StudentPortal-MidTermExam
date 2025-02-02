@@ -20,6 +20,9 @@ const AdminDashboard = lazy(() => import('./module/Admin/Dashboard/Dashboard'));
 const AdminDepartment = lazy(
   () => import('./module/Admin/Department/Department'),
 );
+
+const AdminTeacher = lazy(() => import('./module/Admin/Teacher/Teacher'));
+
 const routes: RouteObject[] = [
   {
     path: '/',
@@ -92,6 +95,10 @@ const routes: RouteObject[] = [
       {
         path: 'department',
         element: <AdminDepartment />,
+      },
+      {
+        path: 'teachers',
+        element: <AdminTeacher />,
       },
       // Add more admin routes here
     ],

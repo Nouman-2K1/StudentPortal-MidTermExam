@@ -165,7 +165,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               {/* <!-- Menu Item Profile --> */}
               <li>
                 <NavLink
-                  to="/profile"
+                  to="/admin/teachers"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-blue-700 dark:hover:bg-meta-4 ${
                     pathname.includes('profile') && 'bg-blue-700 dark:bg-meta-4'
                   }`}
@@ -187,7 +187,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       fill=""
                     />
                   </svg>
-                  Profile
+                  Teachers
                 </NavLink>
               </li>
               {/* <!-- Menu Item Profile --> */}
