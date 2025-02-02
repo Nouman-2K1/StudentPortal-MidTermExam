@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 const UnauthorizedLayout = () => {
   return (
@@ -9,7 +9,7 @@ const UnauthorizedLayout = () => {
       </p>
       <Link
         to="/auth/signin"
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        className="bg-blue-500 hover:bg-blue-950 text-white font-bold py-2 px-4 rounded"
       >
         Sign In
       </Link>

@@ -164,8 +164,8 @@ const AdminTeacher: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="mt-6 bg-white shadow rounded-lg overflow-hidden">
-          <table className="w-full table-auto">
+        <div className="mt-6 bg-white shadow rounded-lg overflow-x-auto">
+          <table className="w-full table-auto min-w-[800px]">
             <thead>
               <tr className="bg-gray-200 text-left">
                 <th className="px-6 py-3 font-medium text-gray-600">#</th>

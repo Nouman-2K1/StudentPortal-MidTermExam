@@ -61,7 +61,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden duration-300 ease-linear  lg:static lg:translate-x-0 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
-      style={{ backgroundColor: '#010080' }}
+      style={{ backgroundColor: '#025B7D' }}
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-center gap-2 px-6 pt-6">

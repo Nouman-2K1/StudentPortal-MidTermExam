@@ -6,6 +6,7 @@ import StudentLayout from './layout/StudentLayout';
 import TeacherLayout from './layout/TeacherLayout';
 import AdminLayout from './layout/AdminLayout';
 import UnauthorizedLayout from './layout/UnauthorizedLayout';
+import AdminStudent from './module/Admin/Student/Student';
 
 // Lazy load components for better performance
 const SignIn = lazy(() => import('./module/Auth/SignIn'));
@@ -99,6 +100,10 @@ const routes: RouteObject[] = [
       {
         path: 'teachers',
         element: <AdminTeacher />,
+      },
+      {
+        path: 'students',
+        element: <AdminStudent />,
       },
       // Add more admin routes here
     ],
