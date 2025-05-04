@@ -39,7 +39,8 @@ const AdminTeacher: React.FC = () => {
       setTeachers(response.data.teachers);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch teachers. Please try again later.');
+      setError('Failed to fetch teachers. Please try again later');
+      console.error(err);
       setLoading(false);
     }
   };

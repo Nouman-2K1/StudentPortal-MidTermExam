@@ -33,7 +33,7 @@ const DropdownUser = () => {
   const handleLogout = async () => {
     try {
       await axios.post(
-        'http://localhost:3301/auth/student/logout',
+        'http://localhost:3301/auth/teacher/logout',
         {},
         {
           withCredentials: true,
