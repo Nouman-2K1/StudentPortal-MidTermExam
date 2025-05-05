@@ -57,16 +57,19 @@ const TeacherClasses: React.FC = () => {
 
   // Fetch subjects
   useEffect(() => {
-    const fetchSubjects = async () => {
+    const fetchTeacherSubjects = async () => {
+      if (!isTeacher(user) || !user.teacher_id) return;
       try {
-        const response = await api.get('/auth/teacher/getclasses');
+        const response = await api.get(
+          `/auth/teacher/teacher/${user.teacher_id}/classes`,
+        );
         setSubjects(response.data);
       } catch (err) {
         setError('Failed to fetch subjects');
       }
       setLoading(false);
     };
-    fetchSubjects();
+    fetchTeacherSubjects();
   }, []);
 
   // Validation Schema

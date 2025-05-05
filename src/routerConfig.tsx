@@ -17,6 +17,10 @@ const TeacherDashboard = lazy(
   () => import('./module/Teachers/Dashboard/Dashboard'),
 );
 const TeacherClasses = lazy(() => import('./module/Teachers/Classes/Classes'));
+const TeacherExams = lazy(() => import('./module/Teachers/Exams/Exams'));
+const ExamQuestions = lazy(
+  () => import('./module/Teachers/Exams/ExamQuestions'),
+);
 const StudentEnrollment = lazy(
   () => import('./module/Teachers/Classes/StudentEnrollment'),
 );
@@ -85,6 +89,14 @@ const routes: RouteObject[] = [
       {
         path: 'classes/:subjectId/students',
         element: <StudentEnrollment />,
+      },
+      {
+        path: 'exams',
+        element: <TeacherExams />,
+      },
+      {
+        path: 'examquestions/:examId/students',
+        element: <ExamQuestions />,
       },
       // Add more teacher routes here
     ],
