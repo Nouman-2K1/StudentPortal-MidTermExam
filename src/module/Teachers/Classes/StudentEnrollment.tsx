@@ -26,7 +26,7 @@ const StudentEnrollment: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [, setError] = useState('');
 
   const api = axios.create({
     baseURL: 'http://localhost:3301/auth/teacher',

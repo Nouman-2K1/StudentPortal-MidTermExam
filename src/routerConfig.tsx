@@ -8,7 +8,7 @@ import AdminLayout from './layout/AdminLayout';
 import UnauthorizedLayout from './layout/UnauthorizedLayout';
 import AdminStudent from './module/Admin/Student/Student';
 
-// Lazy load components for better performance
+// Lazy load components
 const SignIn = lazy(() => import('./module/Auth/SignIn'));
 const StudentDashboard = lazy(
   () => import('./module/Student/Dashboard/Dashboard'),
@@ -25,14 +25,17 @@ const StudentEnrollment = lazy(
   () => import('./module/Teachers/Classes/StudentEnrollment'),
 );
 const AdminDashboard = lazy(() => import('./module/Admin/Dashboard/Dashboard'));
-
 const AdminDepartment = lazy(
   () => import('./module/Admin/Department/Department'),
 );
-
 const StudentClasses = lazy(() => import('./module/Student/Classes/Classes'));
-
 const AdminTeacher = lazy(() => import('./module/Admin/Teacher/Teacher'));
+
+// New components for announcements
+const ClassLayout = lazy(() => import('./module/Teachers/Classes/ClassLayout'));
+const AnnouncementsTab = lazy(
+  () => import('./module/Teachers/Classes/AnnouncementTab'),
+);
 
 const routes: RouteObject[] = [
   {
@@ -69,7 +72,6 @@ const routes: RouteObject[] = [
         path: 'classes',
         element: <StudentClasses />,
       },
-      // Add more student routes here
     ],
   },
   {
@@ -90,11 +92,26 @@ const routes: RouteObject[] = [
       },
       {
         path: 'classes',
-        element: <TeacherClasses />,
-      },
-      {
-        path: 'classes/:subjectId/students',
-        element: <StudentEnrollment />,
+        children: [
+          {
+            index: true,
+            element: <TeacherClasses />,
+          },
+          {
+            path: ':subjectId',
+            element: <ClassLayout />,
+            children: [
+              {
+                path: 'students',
+                element: <StudentEnrollment />,
+              },
+              {
+                index: true,
+                element: <AnnouncementsTab />,
+              },
+            ],
+          },
+        ],
       },
       {
         path: 'exams',
@@ -104,7 +121,6 @@ const routes: RouteObject[] = [
         path: 'examquestions/:examId/students',
         element: <ExamQuestions />,
       },
-      // Add more teacher routes here
     ],
   },
   {
@@ -135,7 +151,6 @@ const routes: RouteObject[] = [
         path: 'students',
         element: <AdminStudent />,
       },
-      // Add more admin routes here
     ],
   },
   {

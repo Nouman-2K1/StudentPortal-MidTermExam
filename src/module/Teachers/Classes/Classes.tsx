@@ -173,7 +173,7 @@ const TeacherClasses: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {subjects.map((subject) => (
             <Link
-              to={`/teacher/classes/${subject.subject_id}/students`}
+              to={`/teacher/classes/${subject.subject_id}`}
               key={subject.subject_id}
               className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
             >
