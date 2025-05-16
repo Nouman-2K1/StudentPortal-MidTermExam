@@ -7,6 +7,7 @@ import TeacherLayout from './layout/TeacherLayout';
 import AdminLayout from './layout/AdminLayout';
 import UnauthorizedLayout from './layout/UnauthorizedLayout';
 import AdminStudent from './module/Admin/Student/Student';
+import ClassAnnouncements from './module/Student/Classes/ClassAnnouncements';
 
 // Lazy load components
 const SignIn = lazy(() => import('./module/Auth/SignIn'));
@@ -70,7 +71,16 @@ const routes: RouteObject[] = [
       },
       {
         path: 'classes',
-        element: <StudentClasses />,
+        children: [
+          {
+            index: true,
+            element: <StudentClasses />,
+          },
+          {
+            path: ':subjectId',
+            element: <ClassAnnouncements />,
+          },
+        ],
       },
     ],
   },
