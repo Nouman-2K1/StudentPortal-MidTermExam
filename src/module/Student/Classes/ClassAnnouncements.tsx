@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useUser } from '../../../context/UserContext';
-import { UserType, Student } from '../../../Interface/User.interface';
 
 interface Announcement {
   announcement_id: number;

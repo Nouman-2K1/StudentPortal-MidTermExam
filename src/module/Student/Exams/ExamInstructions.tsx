@@ -13,7 +13,7 @@ interface ExamDetails {
   Teacher: { name: string };
 }
 
-const ExamInstructions = () => {
+const ExamInstructions: React.FC = () => {
   const { examId } = useParams();
   const navigate = useNavigate();
   const { getStudent } = useUser();

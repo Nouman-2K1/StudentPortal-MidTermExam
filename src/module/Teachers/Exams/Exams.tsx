@@ -26,7 +26,7 @@ const TeacherExams: React.FC = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [, setError] = useState('');
   const { user } = useUser();
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteExamId, setDeleteExamId] = useState<number | null>(null);

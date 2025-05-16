@@ -12,7 +12,7 @@ interface Exam {
   Teacher: { name: string };
 }
 
-const StudentExams = () => {
+const StudentExams: React.FC = () => {
   const { getStudent } = useUser();
   const student = getStudent();
   const [activeTab, setActiveTab] = useState<'upcoming' | 'ongoing' | 'past'>(
