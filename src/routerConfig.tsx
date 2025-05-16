@@ -8,6 +8,8 @@ import AdminLayout from './layout/AdminLayout';
 import UnauthorizedLayout from './layout/UnauthorizedLayout';
 import AdminStudent from './module/Admin/Student/Student';
 import ClassAnnouncements from './module/Student/Classes/ClassAnnouncements';
+import StudentExams from './module/Student/Exams/StudentExam';
+import ExamInstructions from './module/Student/Exams/ExamInstructions';
 
 // Lazy load components
 const SignIn = lazy(() => import('./module/Auth/SignIn'));
@@ -79,6 +81,19 @@ const routes: RouteObject[] = [
           {
             path: ':subjectId',
             element: <ClassAnnouncements />,
+          },
+        ],
+      },
+      {
+        path: 'exams',
+        children: [
+          {
+            index: true,
+            element: <StudentExams />,
+          },
+          {
+            path: ':examId/instructions',
+            element: <ExamInstructions />,
           },
         ],
       },

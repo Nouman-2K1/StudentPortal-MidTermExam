@@ -173,12 +173,15 @@ const TeacherExams: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {exams.map((exam) => (
-            <Link
-              to={`/teacher/examquestions/${exam.exam_id}/students`}
+            <div
               key={exam.exam_id}
-              className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+              className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow relative"
             >
-              <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+              {/* Wrap only the clickable content in Link */}
+              <Link
+                to={`/teacher/examquestions/${exam.exam_id}/students`}
+                className="block hover:no-underline"
+              >
                 <h3 className="text-lg font-semibold mb-2 text-gray-800">
                   {exam.name}
                 </h3>
@@ -205,17 +208,21 @@ const TeacherExams: React.FC = () => {
                     {exam.academic_year}
                   </p>
                 </div>
-                <button
-                  onClick={() => {
-                    setDeleteExamId(exam.exam_id);
-                    setShowDeleteConfirmation(true);
-                  }}
-                  className="mt-4 text-red-600 hover:text-red-700 text-sm font-medium"
-                >
-                  Delete Exam
-                </button>
-              </div>
-            </Link>
+              </Link>
+
+              {/* Place delete button OUTSIDE the Link */}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setDeleteExamId(exam.exam_id);
+                  setShowDeleteConfirmation(true);
+                }}
+                className="mt-4 text-red-600 hover:text-red-700 text-sm font-medium absolute top-2 right-4"
+              >
+                Delete Exam
+              </button>
+            </div>
           ))}
         </div>
       )}
