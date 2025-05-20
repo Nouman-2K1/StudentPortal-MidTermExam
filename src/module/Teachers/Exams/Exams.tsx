@@ -218,7 +218,7 @@ const TeacherExams: React.FC = () => {
                   setDeleteExamId(exam.exam_id);
                   setShowDeleteConfirmation(true);
                 }}
-                className="mt-4 text-red-600 hover:text-red-700 text-sm font-medium absolute top-2 right-4"
+                className="mt-4 text-red-600 hover:text-red-700 text-sm font-medium "
               >
                 Delete Exam
               </button>

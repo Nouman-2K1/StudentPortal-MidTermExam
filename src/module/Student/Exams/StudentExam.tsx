@@ -29,20 +29,19 @@ const StudentExams: React.FC = () => {
           setError('Student not found in context');
           return;
         }
-
         const response = await axios.get(
           `http://localhost:3301/auth/student/${student.student_id}/exams?status=${activeTab}`,
+          { headers: { Authorization: `Bearer ${student?.token}` } },
         );
         setExams(response.data);
-      } catch (err) {
+      } catch {
         setError(`Failed to fetch ${activeTab} exams`);
       } finally {
         setLoading(false);
       }
     };
-
     fetchExams();
-  }, [student?.student_id, activeTab]);
+  }, [student?.student_id, activeTab, student?.token]);
 
   const getExamStatus = (exam: Exam) => {
     const now = new Date();
@@ -50,7 +49,6 @@ const StudentExams: React.FC = () => {
     const endTime = new Date(
       startTime.getTime() + exam.duration_minutes * 60000,
     );
-
     if (now < startTime) return 'upcoming';
     if (now <= endTime) return 'ongoing';
     return 'past';
@@ -58,8 +56,6 @@ const StudentExams: React.FC = () => {
 
   const ExamTimer = ({ exam }: { exam: Exam }) => {
     const [timeLeft, setTimeLeft] = useState('');
-    const status = getExamStatus(exam);
-
     useEffect(() => {
       const updateTimer = () => {
         const now = new Date();
@@ -67,10 +63,11 @@ const StudentExams: React.FC = () => {
         const endTime = new Date(
           startTime.getTime() + exam.duration_minutes * 60000,
         );
+        const status = getExamStatus(exam);
 
         let diff = 0;
         if (status === 'upcoming') diff = startTime.getTime() - now.getTime();
-        if (status === 'ongoing') diff = endTime.getTime() - now.getTime();
+        else if (status === 'ongoing') diff = endTime.getTime() - now.getTime();
 
         if (diff > 0) {
           const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -79,30 +76,36 @@ const StudentExams: React.FC = () => {
           );
           const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-          if (status === 'upcoming')
+          if (status === 'upcoming') {
             setTimeLeft(`${days}d ${hours}h ${minutes}m`);
-          if (status === 'ongoing')
-            setTimeLeft(`${hours}h ${minutes}m remaining`);
+          } else {
+            setTimeLeft(
+              days > 0
+                ? `${days}d ${hours}h ${minutes}m remaining`
+                : `${hours}h ${minutes}m remaining`,
+            );
+          }
+        } else if (status === 'past') {
+          setTimeLeft('Exam Ended');
         }
       };
 
       updateTimer();
       const interval = setInterval(updateTimer, 60000);
       return () => clearInterval(interval);
-    }, [exam, status]);
+    }, [exam]);
+
+    // For styling we re-run getExamStatus each render
+    const status = getExamStatus(exam);
+    const colorClass =
+      status === 'upcoming'
+        ? 'text-blue-600'
+        : status === 'ongoing'
+        ? 'text-green-600'
+        : 'text-gray-500';
 
     return (
-      <div
-        className={`text-lg font-semibold ${
-          status === 'upcoming'
-            ? 'text-blue-600'
-            : status === 'ongoing'
-            ? 'text-green-600'
-            : 'text-gray-500'
-        }`}
-      >
-        {status === 'past' ? 'Exam Ended' : timeLeft}
-      </div>
+      <div className={`text-lg font-semibold ${colorClass}`}>{timeLeft}</div>
     );
   };
 
@@ -112,10 +115,10 @@ const StudentExams: React.FC = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">Your Exams</h1>
           <div className="flex gap-4 border-b">
-            {['upcoming', 'ongoing', 'past'].map((tab) => (
+            {(['upcoming', 'ongoing', 'past'] as const).map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab as any)}
+                onClick={() => setActiveTab(tab)}
                 className={`px-4 py-2 rounded-t-lg ${
                   activeTab === tab
                     ? 'bg-white border-x border-t text-blue-600'
@@ -145,31 +148,33 @@ const StudentExams: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            {exams.map((exam) => (
-              <div
-                key={exam.exam_id}
-                className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                      {exam.name}
-                    </h2>
-                    <div className="text-sm text-gray-500">
-                      <p>Subject: {exam.Subject.name}</p>
-                      <p>Conducted by: {exam.Teacher.name}</p>
-                      <p>Total Marks: {exam.total_marks}</p>
-                      <p>Duration: {exam.duration_minutes} minutes</p>
+            {exams.map((exam) => {
+              const status = getExamStatus(exam);
+              return (
+                <div
+                  key={exam.exam_id}
+                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                        {exam.name}
+                      </h2>
+                      <div className="text-sm text-gray-500 space-y-1">
+                        <p>Subject: {exam.Subject.name}</p>
+                        <p>Conducted by: {exam.Teacher.name}</p>
+                        <p>Total Marks: {exam.total_marks}</p>
+                        <p>Duration: {exam.duration_minutes} minutes</p>
+                      </div>
                     </div>
+                    <ExamTimer exam={exam} />
                   </div>
-                  <ExamTimer exam={exam} />
-                </div>
-                <div className="border-t pt-4 flex justify-between items-center">
-                  <p className="text-sm text-gray-500">
-                    {new Date(exam.scheduled_time).toLocaleDateString()} -{' '}
-                    {new Date(exam.scheduled_time).toLocaleTimeString()}
-                  </p>
-                  {getExamStatus(exam) === 'ongoing' && (
+                  <div className="border-t pt-4 flex justify-between items-center">
+                    <p className="text-sm text-gray-500">
+                      {new Date(exam.scheduled_time).toLocaleDateString()} –{' '}
+                      {new Date(exam.scheduled_time).toLocaleTimeString()}
+                    </p>
+
                     <button
                       className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                       onClick={() => {
@@ -178,10 +183,10 @@ const StudentExams: React.FC = () => {
                     >
                       Start Exam
                     </button>
-                  )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

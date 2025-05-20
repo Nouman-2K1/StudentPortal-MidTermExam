@@ -10,6 +10,7 @@ import AdminStudent from './module/Admin/Student/Student';
 import ClassAnnouncements from './module/Student/Classes/ClassAnnouncements';
 import StudentExams from './module/Student/Exams/StudentExam';
 import ExamInstructions from './module/Student/Exams/ExamInstructions';
+import ExamInterface from './module/Student/Exams/ExamInterface';
 
 // Lazy load components
 const SignIn = lazy(() => import('./module/Auth/SignIn'));
@@ -87,14 +88,9 @@ const routes: RouteObject[] = [
       {
         path: 'exams',
         children: [
-          {
-            index: true,
-            element: <StudentExams />,
-          },
-          {
-            path: ':examId/instructions',
-            element: <ExamInstructions />,
-          },
+          { index: true, element: <StudentExams /> },
+          { path: ':examId/instructions', element: <ExamInstructions /> },
+          { path: ':examId/take/:attemptId', element: <ExamInterface /> }, // Fixed path
         ],
       },
     ],

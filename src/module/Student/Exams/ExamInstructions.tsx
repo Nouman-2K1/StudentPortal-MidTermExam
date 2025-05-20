@@ -21,6 +21,7 @@ const ExamInstructions: React.FC = () => {
   const [exam, setExam] = useState<ExamDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [attemptStatus, setAttemptStatus] = useState<string | null>(null); // NEW STATE
 
   // Create axios instance with authentication
   const api = axios.create({
@@ -52,13 +53,67 @@ const ExamInstructions: React.FC = () => {
       }
     };
 
+    const fetchAttemptStatus = async () => {
+      try {
+        if (!student?.student_id) return;
+
+        const response = await api.get(
+          `/student/exams/${examId}/attempt-status/${student.student_id}`,
+        );
+        if (response.data?.status) {
+          setAttemptStatus(response.data.status); // status can be "not_attempted", "completed", "disqualified"
+        }
+      } catch (err) {
+        console.error('Error fetching attempt status', err);
+      }
+    };
+
     fetchExamDetails();
+    fetchAttemptStatus();
   }, [examId, student?.student_id]);
 
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return `${hours}h ${mins}m`;
+  };
+
+  const [starting, setStarting] = useState(false);
+
+  const handleStartExam = async () => {
+    try {
+      setStarting(true);
+      setError('');
+
+      const activeResponse = await api.get(
+        `/student/exams/attempts/active/${student?.student_id}`,
+      );
+
+      if (activeResponse.data) {
+        return navigate(
+          `/student/exams/${activeResponse.data.exam_id}/take/${activeResponse.data.attempt_id}`,
+        );
+      }
+
+      const response = await api.post(
+        `/student/exams/${examId}/start/${student?.student_id}`,
+      );
+
+      if (!response.data?.attempt_id) {
+        throw new Error('Invalid response from server - Missing attempt ID');
+      }
+
+      navigate(`/student/exams/${examId}/take/${response.data.attempt_id}`);
+    } catch (err) {
+      let errorMessage = 'Failed to start exam';
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.error || err.message;
+        console.error('Server Error Details:', err.response?.data);
+      }
+      setError(errorMessage);
+    } finally {
+      setStarting(false);
+    }
   };
 
   if (!student) {
@@ -68,6 +123,9 @@ const ExamInstructions: React.FC = () => {
       </div>
     );
   }
+
+  const isAttempted =
+    attemptStatus === 'completed' || attemptStatus === 'disqualified';
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -111,10 +169,10 @@ const ExamInstructions: React.FC = () => {
                 <ul className="list-disc pl-6 space-y-2">
                   <li>The exam must be taken in fullscreen mode</li>
                   <li>Do not switch tabs or windows during the exam</li>
-                  <li>You will get 3 flags for suspicious activity </li>
+                  <li>You will get 3 flags for suspicious activity</li>
                   <li>
-                    If you switch tabs of exit full screen, You will get 1 flags
-                    and on the 3rd flag you will be disqualified from the exam{' '}
+                    If you switch tabs or exit fullscreen, you will get 1 flag.
+                    On the 3rd flag, you will be disqualified from the exam.
                   </li>
                   <li>Use of external materials is strictly prohibited</li>
                   <li>Do not communicate with others during the exam</li>
@@ -123,11 +181,21 @@ const ExamInstructions: React.FC = () => {
               </div>
 
               <button
-                onClick={() => navigate(`/student/exams/${examId}/take`)}
-                className="w-full py-3 text-white rounded-lg hover:bg-green-700 text-lg font-semibold"
+                onClick={handleStartExam}
+                disabled={starting || isAttempted}
+                className="w-full py-3 text-white rounded-lg hover:bg-green-700 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                 style={{ backgroundColor: '#025B7D' }}
               >
-                Start Exam
+                {starting ? (
+                  <>
+                    <span className="animate-pulse">Starting Exam</span>
+                    <span className="inline-block animate-spin">↻</span>
+                  </>
+                ) : isAttempted ? (
+                  'Exam Already Attempted'
+                ) : (
+                  'Start Exam'
+                )}
               </button>
             </div>
           </div>
