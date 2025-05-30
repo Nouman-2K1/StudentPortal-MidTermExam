@@ -95,7 +95,6 @@ const StudentExams: React.FC = () => {
       return () => clearInterval(interval);
     }, [exam]);
 
-    // For styling we re-run getExamStatus each render
     const status = getExamStatus(exam);
     const colorClass =
       status === 'upcoming'
@@ -175,14 +174,17 @@ const StudentExams: React.FC = () => {
                       {new Date(exam.scheduled_time).toLocaleTimeString()}
                     </p>
 
-                    <button
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                      onClick={() => {
-                        window.location.href = `/student/exams/${exam.exam_id}/instructions`;
-                      }}
-                    >
-                      Start Exam
-                    </button>
+                    {/* Only show start button if exam is ongoing */}
+                    {status === 'ongoing' && (
+                      <button
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                        onClick={() => {
+                          window.location.href = `/student/exams/${exam.exam_id}/instructions`;
+                        }}
+                      >
+                        Start Exam
+                      </button>
+                    )}
                   </div>
                 </div>
               );
