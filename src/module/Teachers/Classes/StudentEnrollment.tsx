@@ -103,13 +103,6 @@ const StudentEnrollment: React.FC = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-4 text-blue-600 hover:text-blue-700"
-      >
-        ← Back to Classes
-      </button>
-
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-800">
           Student Enrollments

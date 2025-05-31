@@ -1,17 +1,8 @@
 // src/components/Teacher/ClassLayout.tsx
-import { NavLink, Outlet, useParams, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { NavLink, Outlet, useParams } from 'react-router-dom'; // Removed useNavigate
 
 const ClassLayout = () => {
   const { subjectId } = useParams<{ subjectId: string }>();
-  const navigate = useNavigate();
-
-  // Redirect to students tab by default
-  useEffect(() => {
-    if (subjectId) {
-      navigate(`/teacher/classes/${subjectId}/students`, { replace: true });
-    }
-  }, [subjectId, navigate]);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">

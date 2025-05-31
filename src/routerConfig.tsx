@@ -151,8 +151,12 @@ const routes: RouteObject[] = [
                 element: <StudentEnrollment />,
               },
               {
-                index: true,
+                path: 'announcements',
                 element: <AnnouncementsTab />,
+              },
+              {
+                index: true,
+                element: <StudentEnrollment />,
               },
             ],
           },

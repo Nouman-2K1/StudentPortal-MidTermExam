@@ -93,7 +93,6 @@ const StudentDashboard: React.FC = () => {
   return (
     <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        {/* Welcome Header */}
         <div className="mb-8 bg-white rounded-xl shadow-sm p-6">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
             Welcome back, {student?.name}!
@@ -102,7 +101,6 @@ const StudentDashboard: React.FC = () => {
             Here's what's happening with your studies today
           </p>
 
-          {/* Quick Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
             <div className="bg-blue-50 p-4 rounded-lg">
               <div className="flex items-center">
@@ -149,7 +147,6 @@ const StudentDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Upcoming Exams */}
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">
@@ -203,11 +200,16 @@ const StudentDashboard: React.FC = () => {
                     </div>
                   </div>
                 ))}
+                {stats.upcomingExamsCount > upcomingExams.length && (
+                  <div className="text-center text-sm text-gray-500 mt-4">
+                    Showing {upcomingExams.length} of {stats.upcomingExamsCount}{' '}
+                    upcoming exams
+                  </div>
+                )}
               </div>
             )}
           </div>
 
-          {/* Recent Announcements */}
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">
@@ -255,12 +257,11 @@ const StudentDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick Actions */}
         <div className="mt-6 bg-white rounded-xl shadow-sm p-6">
           <h2 className="text-xl font-bold text-gray-800 mb-4">
             Quick Actions
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               to="/student/classes"
               className="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-200"
@@ -283,14 +284,6 @@ const StudentDashboard: React.FC = () => {
             >
               <ChartBarIcon className="h-10 w-10 text-purple-600 mb-2" />
               <span>My Results</span>
-            </Link>
-
-            <Link
-              to="/student/schedule"
-              className="flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:bg-yellow-50 hover:border-yellow-200"
-            >
-              <CalendarDaysIcon className="h-10 w-10 text-yellow-600 mb-2" />
-              <span>My Schedule</span>
             </Link>
           </div>
         </div>
