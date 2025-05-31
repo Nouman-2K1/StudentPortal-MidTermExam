@@ -13,7 +13,9 @@ import ExamInstructions from './module/Student/Exams/ExamInstructions';
 import ExamInterface from './module/Student/Exams/ExamInterface';
 import StudentResults from './module/Student/Results/StudentResult';
 import ExamResultDetails from './module/Student/Results/ExamResultDetails';
-
+import TeacherExamsList from './module/Teachers/Results/TeacherExamsList';
+import ExamStudentsList from './module/Teachers/Results/ExamStudentsList';
+import StudentAttemptDetails from './module/Teachers/Results/StudentAttemptDetails';
 // Lazy load components
 const SignIn = lazy(() => import('./module/Auth/SignIn'));
 const StudentDashboard = lazy(
@@ -156,6 +158,23 @@ const routes: RouteObject[] = [
       {
         path: 'examquestions/:examId/students',
         element: <ExamQuestions />,
+      },
+      {
+        path: 'results',
+        children: [
+          {
+            index: true,
+            element: <TeacherExamsList />,
+          },
+          {
+            path: ':examId/students',
+            element: <ExamStudentsList />,
+          },
+          {
+            path: 'attempt/:attemptId',
+            element: <StudentAttemptDetails />,
+          },
+        ],
       },
     ],
   },
