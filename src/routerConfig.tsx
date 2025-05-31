@@ -16,6 +16,13 @@ import ExamResultDetails from './module/Student/Results/ExamResultDetails';
 import TeacherExamsList from './module/Teachers/Results/TeacherExamsList';
 import ExamStudentsList from './module/Teachers/Results/ExamStudentsList';
 import StudentAttemptDetails from './module/Teachers/Results/StudentAttemptDetails';
+import AdminExamsList from './module/Admin/Results/AdminExamsList';
+import AdminExamStudentsList from './module/Admin/Results/AdminExamStudentsList';
+import AdminStudentAttemptDetails from './module/Admin/Results/AdminStudentAttemptDetails';
+import AdminSubjectsList from './module/Admin/Classes/AdminSubjectsList';
+import AdminSubjectStudents from './module/Admin/Classes/AdminSubjectStudents';
+import AdminExamsLists from './module/Admin/Exams/AdminExamsLists';
+import AdminExamQuestions from './module/Admin/Exams/AdminExamQuestions';
 // Lazy load components
 const SignIn = lazy(() => import('./module/Auth/SignIn'));
 const StudentDashboard = lazy(
@@ -205,6 +212,49 @@ const routes: RouteObject[] = [
       {
         path: 'students',
         element: <AdminStudent />,
+      },
+      {
+        path: 'results',
+        children: [
+          {
+            index: true,
+            element: <AdminExamsList />,
+          },
+          {
+            path: ':examId/students',
+            element: <AdminExamStudentsList />,
+          },
+          {
+            path: 'attempt/:attemptId',
+            element: <AdminStudentAttemptDetails />,
+          },
+        ],
+      },
+      {
+        path: 'classes',
+        children: [
+          {
+            index: true,
+            element: <AdminSubjectsList />,
+          },
+          {
+            path: ':subjectId/students',
+            element: <AdminSubjectStudents />,
+          },
+        ],
+      },
+      {
+        path: 'exams',
+        children: [
+          {
+            index: true,
+            element: <AdminExamsLists />,
+          },
+          {
+            path: ':examId/questions',
+            element: <AdminExamQuestions />,
+          },
+        ],
       },
     ],
   },
